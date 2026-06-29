@@ -1,0 +1,42 @@
+# Render Blueprint — 高考志愿填报APP 后端
+# 部署方式: 连接 GitHub → Render 自动检测此文件
+
+services:
+  - type: web
+    name: gaokao-backend
+    runtime: node
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    nodeVersion: 18.x
+    rootDir: gaokao-backend
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gaokao-db
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_FROM_EMAIL
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: DEEPSEEK_BASE_URL
+        value: https://api.deepseek.com/v1
+      - key: DEEPSEEK_MODEL
+        value: deepseek-v4-flash
+      - key: USE_LLM
+        value: "true"
+      - key: CORS_ORIGINS
+        value: https://gaokao.vercel.app
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+
+databases:
+  - name: gaokao-db
+    plan: free

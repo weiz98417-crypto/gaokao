@@ -19,5 +19,6 @@ playwright-report/
 debug.log
 test_output.txt
 package-lock.json
+.downloads/
 --filename=*
 *.png
