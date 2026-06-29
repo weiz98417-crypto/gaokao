@@ -1,0 +1,122 @@
+[
+  {
+    "id": "1",
+    "college": "华南理工大学",
+    "major": "计算机科学与技术",
+    "majorGroup": "物理+化学",
+    "scores": [
+      { "year": 2023, "score": 628 },
+      { "year": 2024, "score": 632 },
+      { "year": 2025, "score": 635 }
+    ],
+    "trend": "up",
+    "probability": 15,
+    "purity": 92,
+    "tier": "冲"
+  },
+  {
+    "id": "2",
+    "college": "中山大学",
+    "major": "软件工程",
+    "majorGroup": "物理+化学",
+    "scores": [
+      { "year": 2023, "score": 620 },
+      { "year": 2024, "score": 625 },
+      { "year": 2025, "score": 630 }
+    ],
+    "trend": "up",
+    "probability": 22,
+    "purity": 88,
+    "tier": "冲"
+  },
+  {
+    "id": "3",
+    "college": "暨南大学",
+    "major": "电子信息工程",
+    "majorGroup": "物理+化学",
+    "scores": [
+      { "year": 2023, "score": 598 },
+      { "year": 2024, "score": 602 },
+      { "year": 2025, "score": 605 }
+    ],
+    "trend": "up",
+    "probability": 45,
+    "purity": 85,
+    "tier": "稳"
+  },
+  {
+    "id": "4",
+    "college": "深圳大学",
+    "major": "人工智能",
+    "majorGroup": "物理+化学",
+    "scores": [
+      { "year": 2023, "score": 590 },
+      { "year": 2024, "score": 595 },
+      { "year": 2025, "score": 600 }
+    ],
+    "trend": "up",
+    "probability": 55,
+    "purity": 82,
+    "tier": "稳"
+  },
+  {
+    "id": "5",
+    "college": "广东工业大学",
+    "major": "自动化",
+    "majorGroup": "物理+不限",
+    "scores": [
+      { "year": 2023, "score": 575 },
+      { "year": 2024, "score": 578 },
+      { "year": 2025, "score": 580 }
+    ],
+    "trend": "stable",
+    "probability": 72,
+    "purity": 78,
+    "tier": "保"
+  },
+  {
+    "id": "6",
+    "college": "华南农业大学",
+    "major": "数据科学与大数据技术",
+    "majorGroup": "物理+化学",
+    "scores": [
+      { "year": 2023, "score": 568 },
+      { "year": 2024, "score": 572 },
+      { "year": 2025, "score": 575 }
+    ],
+    "trend": "stable",
+    "probability": 78,
+    "purity": 75,
+    "tier": "保"
+  },
+  {
+    "id": "7",
+    "college": "广州大学",
+    "major": "网络空间安全",
+    "majorGroup": "物理+化学",
+    "scores": [
+      { "year": 2023, "score": 560 },
+      { "year": 2024, "score": 563 },
+      { "year": 2025, "score": 565 }
+    ],
+    "trend": "down",
+    "probability": 88,
+    "purity": 70,
+    "tier": "垫"
+  },
+  {
+    "id": "8",
+    "college": "广东技术师范大学",
+    "major": "网络工程",
+    "majorGroup": "物理+不限",
+    "scores": [
+      { "year": 2023, "score": 550 },
+      { "year": 2024, "score": 552 },
+      { "year": 2025, "score": 555 }
+    ],
+    "trend": "stable",
+    "probability": 92,
+    "purity": 68,
+    "tier": "垫"
+  }
+]

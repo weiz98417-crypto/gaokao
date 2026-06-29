@@ -1,0 +1,58 @@
+{
+  "name": "gaokao-backend",
+  "version": "0.1.0",
+  "description": "高考志愿填报 APP 后端服务（第一阶段：本地 Mock 数据通路）",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force",
+    "db:studio": "prisma studio",
+    "import:admission": "tsx scripts/importAdmissionScores.ts",
+    "import:plans": "tsx scripts/importUniversityPlans.ts",
+    "import:majors": "tsx scripts/importMajors.ts",
+    "import:citymap": "tsx scripts/importCityUniversityMap.ts",
+    "import:all": "tsx scripts/importAll.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "gaokao",
+    "recommendation",
+    "express",
+    "typescript"
+  ],
+  "author": "Kou",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.16.2",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.8"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.14.10",
+    "@types/nodemailer": "^6.4.14",
+    "@types/supertest": "^7.2.0",
+    "prisma": "^5.16.2",
+    "supertest": "^7.2.2",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3",
+    "vitest": "^4.1.9"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,220 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["app", "data", "rec"]
+}
+
+model Province {
+  code       String  @id @db.VarChar(10)
+  name       String  @db.VarChar(50)
+  examMode   String  @map("exam_mode") @db.VarChar(20)
+  totalScore Int     @map("total_score")
+  isActive   Boolean @default(true) @map("is_active")
+
+  @@map("provinces")
+  @@schema("data")
+}
+
+model University {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code          String   @unique @db.VarChar(20)
+  name          String   @db.VarChar(200)
+  provinceCode  String   @map("province_code") @db.VarChar(10)
+  level         String?  @db.VarChar(50)
+  type          String?  @db.VarChar(50)
+  tags          String[] @default([])
+  is211         Boolean  @default(false)
+  is985         Boolean  @default(false)
+  isDoubleFirst Boolean  @default(false) @map("is_double_first")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("universities")
+  @@schema("data")
+}
+
+model Major {
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                 String   @unique @db.VarChar(20)
+  name                 String   @db.VarChar(200)
+  category             String   @db.VarChar(100)
+  subjectRequirements  String[] @default([]) @map("subject_requirements")
+  duration             Int      @default(4)
+  degree               String?  @db.VarChar(50)
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("majors")
+  @@schema("data")
+}
+
+model AdmissionScore {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  universityId String  @map("university_id") @db.Uuid
+  majorId      String  @map("major_id") @db.Uuid
+  provinceCode String  @map("province_code") @db.VarChar(10)
+  year         Int
+  batch        String  @db.VarChar(20)
+  minScore     Float?  @map("min_score")
+  avgScore     Float?  @map("avg_score")
+  maxScore     Float?  @map("max_score")
+  minRank      Int?    @map("min_rank")
+  avgRank      Int?    @map("avg_rank")
+  maxRank      Int?    @map("max_rank")
+  planCount    Int     @default(0) @map("plan_count")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([provinceCode, year, universityId, majorId, batch])
+  @@map("admission_scores")
+  @@schema("data")
+}
+
+model UniversityPlan {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  universityId        String   @map("university_id") @db.Uuid
+  majorId             String   @map("major_id") @db.Uuid
+  provinceCode        String   @map("province_code") @db.VarChar(10)
+  year                Int
+  batch               String   @db.VarChar(20)
+  planCount           Int      @default(0) @map("plan_count")
+  tuition             Float?
+  duration            Int      @default(4)
+  subjectRequirements String[] @default([]) @map("subject_requirements")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([provinceCode, year, universityId, majorId, batch])
+  @@map("university_plans")
+  @@schema("data")
+}
+
+model Recommendation {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  candidateId   String?   @map("candidate_id") @db.Uuid
+  scoreId       String?   @map("score_id") @db.Uuid
+  preferenceId  String?   @map("preference_id") @db.Uuid
+  result        Json
+  resultHash    String?   @map("result_hash") @db.VarChar(64)
+  generatedAt   DateTime  @default(now()) @map("generated_at") @db.Timestamptz(6)
+  expiresAt     DateTime? @map("expires_at") @db.Timestamptz(6)
+
+  @@map("recommendations")
+  @@schema("app")
+}
+
+model RiskCheck {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String @db.VarChar(100)
+  status    String @db.VarChar(20)
+  detail    String @db.Text
+  sortOrder Int    @default(0) @map("sort_order")
+
+  @@map("risk_checks")
+  @@schema("app")
+}
+
+// ==========================================
+// 认证模块 — app schema
+// ==========================================
+
+model User {
+  id             String             @id @default(uuid()) @db.Uuid
+  email          String             @unique
+  passwordHash   String
+  nickname       String?
+  isVerified     Boolean            @default(false)
+  wechatOpenId   String?            @unique
+  failedAttempts Int                @default(0)
+  lockedUntil    DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  verificationCodes VerificationCode[]
+
+  @@schema("app")
+}
+
+model VerificationCode {
+  id        String    @id @default(uuid()) @db.Uuid
+  email     String
+  codeHash  String
+  type      String
+  expiresAt DateTime
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  userId    String?   @db.Uuid
+  user      User?     @relation(fields: [userId], references: [id])
+
+  @@index([email, type])
+  @@schema("app")
+}
+
+model RankLookup {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  score        Int
+  provinceCode String? @map("province_code") @db.VarChar(10)
+  rank         Int
+  sameScore    Int     @map("same_score")
+  rangeMin     Int     @map("range_min")
+  rangeMax     Int     @map("range_max")
+
+  @@unique([score, provinceCode])
+  @@map("rank_lookups")
+  @@schema("rec")
+}
+
+model ProvinceBatchLine {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provinceCode String  @map("province_code") @db.VarChar(10)
+  year         Int
+  subjectType  String  @map("subject_type") @db.VarChar(20)
+  batch        String  @db.VarChar(20)
+  score        Int
+  source       String? @db.VarChar(200)
+  @@unique([provinceCode, year, subjectType, batch])
+  @@map("province_batch_lines")
+  @@schema("data")
+}
+
+model ProvinceRankSegment {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provinceCode String  @map("province_code") @db.VarChar(10)
+  year         Int
+  subjectType  String  @map("subject_type") @db.VarChar(20)
+  score        Int
+  rank         Int
+  totalCount   Int?    @map("total_count")
+  source       String? @db.VarChar(200)
+  @@map("province_rank_segments")
+  @@schema("data")
+}
+
+model SubjectCoverage {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provinceCode String?  @map("province_code") @db.VarChar(10)
+  year         Int
+  subjects     String[]
+  coveragePct  Float    @map("coverage_pct")
+  totalMajors  Int      @map("total_majors")
+  source       String?  @db.VarChar(200)
+  @@unique([provinceCode, year, subjects])
+  @@map("subject_coverages")
+  @@schema("data")
+}
+
+model CityUniversityMap {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cityName     String   @map("city_name") @db.VarChar(100)
+  universityId String   @map("university_id") @db.Uuid
+  provinceCode String   @map("province_code") @db.VarChar(10)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([cityName, universityId])
+  @@map("city_university_map")
+  @@schema("data")
+}

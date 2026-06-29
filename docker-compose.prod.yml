@@ -1,0 +1,90 @@
+# ============================================
+# 高考志愿填报APP - 生产环境 Docker Compose
+# 使用方式: docker compose -f docker-compose.prod.yml up -d
+# ============================================
+
+version: '3.8'
+
+services:
+  # ============================================
+  # PostgreSQL 16 数据库
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: gaokao-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-gaokao}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-gaokao123}
+      POSTGRES_DB: ${DB_NAME:-gaokao}
+    ports:
+      - '127.0.0.1:5432:5432'  # 仅本地访问
+    volumes:
+      - gaokao-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-gaokao} -d ${DB_NAME:-gaokao}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Node.js 后端 API
+  # ============================================
+  backend:
+    build:
+      context: ./gaokao-backend
+      dockerfile: Dockerfile
+    container_name: gaokao-backend
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost}
+      - USE_DATABASE=true
+      - DATABASE_URL=postgresql://${DB_USER:-gaokao}:${DB_PASSWORD:-gaokao123}@postgres:5432/${DB_NAME:-gaokao}?schema=public
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-15m}
+      - BREVO_API_KEY=${BREVO_API_KEY}
+      - BREVO_FROM_EMAIL=${BREVO_FROM_EMAIL}
+      - BREVO_FROM_NAME=${BREVO_FROM_NAME:-高考志愿填报系统}
+      - USE_LLM=${USE_LLM:-true}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com/v1}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-v4-flash}
+      - LOGIN_MAX_ATTEMPTS=${LOGIN_MAX_ATTEMPTS:-5}
+      - LOGIN_LOCK_MINUTES=${LOGIN_LOCK_MINUTES:-15}
+    ports:
+      - '127.0.0.1:3000:3000'  # 仅 nginx 访问
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ============================================
+  # Nginx 反向代理 + 前端静态文件
+  # ============================================
+  nginx:
+    image: nginx:alpine
+    container_name: gaokao-nginx
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./gaokao-app/dist:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro  # SSL 证书目录（需要时创建）
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  gaokao-pgdata:

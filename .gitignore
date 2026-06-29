@@ -2,9 +2,9 @@ node_modules/
 dist/
 .env
 .env.*
-*.log
 !.env.example
 !.env.prod.template
+*.log
 *.tsbuildinfo
 .DS_Store
 .vscode/
@@ -12,3 +12,12 @@ dist/
 coverage/
 test-results/
 playwright-report/
+.postgres/
+.playwright-cli/
+.artifacts/
+.workbuddy/
+debug.log
+test_output.txt
+package-lock.json
+--filename=*
+*.png

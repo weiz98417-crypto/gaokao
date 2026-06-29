@@ -1,0 +1,8 @@
+[
+  { "id": "1", "name": "梯度合理性", "status": "pass", "detail": "冲稳保垫比例合理 (2:2:2:2)" },
+  { "id": "2", "name": "撞车检测", "status": "warn", "detail": "2个热门专业竞争激烈，建议调整" },
+  { "id": "3", "name": "志愿填满", "status": "pass", "detail": "已填满45个志愿" },
+  { "id": "4", "name": "重复院校", "status": "pass", "detail": "未发现重复院校" },
+  { "id": "5", "name": "选科复核", "status": "pass", "detail": "所有专业选科要求匹配" },
+  { "id": "6", "name": "纯净度均值", "status": "warn", "detail": "平均纯净度78%，建议提升至80%+" }
+]
